@@ -103,6 +103,20 @@ const FormResults: React.FC<FormResultsProps> = ({
     }
   };
 
+    // Save pending notes if the component unmounts before the debounced save runs
+  useEffect(() => {
+    return () => {
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+
+      if (!isReadOnly && result.id && notes !== (result.notas_analista || '')) {
+        // Persist the latest notes on unmount
+        saveNotes(notes);
+      }
+    };
+  }, [saveTimeout, isReadOnly, result.id, notes]);
+  
   const calculateActualCounts = () => {
     let yes = 0;
     let no = 0;
